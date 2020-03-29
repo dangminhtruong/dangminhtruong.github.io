@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { selectRepositories, fetchData, loadMore } from '../../state/modules/Home'
+import Repository from '../../components/repository'
+import { selectData, fetchData, loadMore, loadStargazers } from '../../state/modules/Home'
+import { Input, Button, Badge, Spin } from 'antd';
 import './home.scss'
-
-import { Input, Divider, Button, Badge } from 'antd';
-import { EyeOutlined, DownOutlined } from '@ant-design/icons';
 
 const { Search } = Input;
 
@@ -21,9 +20,15 @@ class Home extends Component {
         loadMore({username, page: currentPage + 1})
     }
 
+    loadStargazers = (repoId, url) => {
+        const {loadStargazers} = this.props
+        loadStargazers({repoId, url})
+    }
+
     render() {
-        const {repositories, total, lastPage, currentPage} = this.props.data
+        const {repositories, total, lastPage, currentPage, loading} = this.props.data
         return(
+            
             <div className="home">
                 <Search
                     placeholder="Input username.."
@@ -42,25 +47,16 @@ class Home extends Component {
                     </div>
                     {
                         repositories.map(repository => (
-                            <div className="repo" key={`repo ${repository.id}`}>
-                                <Divider>
-                                    <div className="repo-info">
-                                        <p className="repo-name">{repository.name}</p>
-                                        <Button type="dashed" shape="round" icon={<EyeOutlined />}>
-                                            <span className="repo-stargazer">{repository.stargazers_count}</span>
-                                        </Button>
-                                    </div>
-                                </Divider>
-                                <p>
-                                    {(repository.description) ? repository.description : 'This repository have no description'}
-                                </p>
-                            </div>
+                            <Repository key={`repo ${repository.id}`} 
+                                repository={repository}
+                                loadStargazers={this.loadStargazers}
+                            />
                         ))
                     }
                     {
                         (currentPage < lastPage) ?
-                            <Button type="primary" onClick={this.loadMore}>
-                                Load more <DownOutlined />
+                            <Button type="primary" onClick={this.loadMore} loading={loading}>
+                                Load more
                             </Button>
                         : null
                     }
@@ -71,12 +67,13 @@ class Home extends Component {
 }
 
 const mapStateToProps = state => ({
-    data: selectRepositories(state).toJS()
+    data: selectData(state).toJS()
 });
 
 const mapDispatchToProps = {
     fetchData,
-    loadMore
+    loadMore,
+    loadStargazers
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);

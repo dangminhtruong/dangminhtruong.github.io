@@ -44,3 +44,26 @@
   .repo-stargazer{
     margin-left: 5px;
   }
+
+  .list-stargazers{
+    display: flex;
+    justify-content: center;
+    padding-top: 1em;
+  }
+
+  .stargazer{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+
+    img{
+      width: 50px;
+      height: auto;
+      margin-right: 20px;
+    }
+  }
+
+  .loading-full{
+    display: flex;
+    justify-content: center;
+  }
